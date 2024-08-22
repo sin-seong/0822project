@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BoardMapper">
+	<select id="getNumRecords" resultType="int">
+		select count(*) from board
+	</select>
+
+	<select id="selectAllProducts"
+		resultType="du.db.BoardDto">
+		SELECT * FROM board
+	</select>
+
+	<select id="selectList" resultType="du.db.BoardDto">
+	<![CDATA[
+	select *
+	from
+	(select rownum as rnum, t1.*
+	from (select * from board order by num) t1
+	where
+	rownum <= #{listSize}
+	)
+	where #{start} <= RNUM
+]]>
+	</select>
+
+	<update id="updateHits" parameterType="int">
+		update board set
+		hits=hits+1 where num= #{num}
+	</update>
+
+	<select id="selectOne" parameterType="int"
+		resultType="du.db.BoardDto">
+		SELECT * FROM board WHERE num = #{num}
+	</select>
+
+
+	<insert id="insertOne" parameterType="du.db.BoardDto">
+		insert into board (writer,
+		title, content, regtime,hits)
+		VALUES (#{writer}, #{title}, #{content},
+		SYSDATE, 0)
+	</insert>
+
+	<update id="updateOne" parameterType="du.db.BoardDto">
+		UPDATE board
+		SET writer =
+		#{writer}, title = #{title}, content = #{content},
+		regtime = SYSDATE
+		where num = #{num}
+	</update>
+
+	<delete id="deleteOne" parameterType="int">
+		DELETE FROM board WHERE num
+		= #{num}
+	</delete>
+</mapper>
